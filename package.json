@@ -1,0 +1,17 @@
+{
+  "name": "nlog",
+  "version": "0.0.1",
+  "description": "A tool for digesting and disseminating arbitrary log data",
+  "main": "src/index.js",
+  "repository": "https://github.com/cpave3/nlog",
+  "author": "Cameron Pavey <cpave3@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "express": "^4.16.3",
+    "nosqlite": "^0.2.2",
+    "path": "^0.12.7",
+    "socket.io": "^2.1.1",
+    "tail-forever": "^0.3.15"
+  }
+}
