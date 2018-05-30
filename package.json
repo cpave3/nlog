@@ -8,9 +8,12 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",
+    "commander": "^2.15.1",
     "express": "^4.16.3",
     "nosqlite": "^0.2.2",
     "path": "^0.12.7",
+    "preferences": "^1.0.2",
+    "prettyjson": "^1.2.1",
     "socket.io": "^2.1.1",
     "tail-forever": "^0.3.15"
   }
