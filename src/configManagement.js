@@ -39,6 +39,13 @@ const methods = {
                 }
             });
         })
+    },
+    validateConfig: (objectConfig) => {
+        // Check that the config has the required keys
+        return  !!objectConfig &&
+                !!objectConfig.target && 
+                !!objectConfig.rules.regex && 
+                !!objectConfig.rules.matches;
     }
 };
 
