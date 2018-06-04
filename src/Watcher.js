@@ -39,7 +39,7 @@ class Watcher {
 
     startWatching() {
         this.tail = new Tail(this.targetFile);
-        log.success('Watching started');
+        log.success(`Started Watching: ${this.name || this.targetFile}`);
         this.tail.on('line', (line) => {
             // We have a line, and need to process it
             this.regexFilter.lastIndex = 0;

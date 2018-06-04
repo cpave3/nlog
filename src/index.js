@@ -32,7 +32,6 @@ loadConfigs(prefs.config.dir)
                 watchers.push(new Watcher(config));
             }
         });
-        log.json(watchers);
     })
     .then(() => {
         if (watchers) {
@@ -50,7 +49,7 @@ program
     .version(pjson.version || '0.0.1')
     .description(pjson.description || '')
     .action(() => {
-        console.log('nothing');
+        log.warning('Nothing happened... yet.');
     });
 
 program
