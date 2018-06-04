@@ -5,8 +5,7 @@ const   connection      = new(require('nosqlite').Connection)();
 const   port            = process.env.PORT || 4001;
 const   express         = require('express'),
         http            = require('http'),
-        chalk           = require('chalk'),
-        prettyjson      = require('prettyjson'),
+        log             = require('./Log'),
         socketIo        = require('socket.io');
 const   program         = require('commander');
 const   pjson           = require('../package.json');
@@ -33,10 +32,17 @@ loadConfigs(prefs.config.dir)
                 watchers.push(new Watcher(config));
             }
         });
-        console.log(watchers);
+        log.json(watchers);
+    })
+    .then(() => {
+        if (watchers) {
+            watchers.forEach((watcher) => {
+                if (watcher.active) watcher.startWatching();       
+            });
+        }
     })
     .catch((err) => {
-        console.log(chalk.bgRed(`Error: ${err}`));
+        log.error(`Error: ${err}`);
     });
 
 
@@ -50,7 +56,7 @@ program
 program
     .command('view:pref')
     .action(() => {
-        console.log(prettyjson.render(prefs));
+        log.json(prefs);
     });
 
 program
