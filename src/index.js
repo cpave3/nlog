@@ -6,6 +6,7 @@ const   port            = process.env.PORT || 4001;
 const   express         = require('express'),
         http            = require('http'),
         log             = require('./Log'),
+        events          = require('./eventEngine'),
         socketIo        = require('socket.io');
 const   program         = require('commander');
 const   pjson           = require('../package.json');
@@ -15,7 +16,6 @@ const   { addConfig, defaultPreferences, loadConfigs, validateConfig } = require
 const   Watcher        = require('./Watcher'); 
 
 const prefs = new Preferences('com.bytedriven.nlog', defaultPreferences());
-
 // FIrst of all, we need to load in any config files from the config directory
 // These will be the files which specify which logs to watch and what to do with them
 let configs = [];
@@ -51,6 +51,10 @@ loadConfigs(prefs.config.dir)
         log.error(`Error: ${err}`);
     });
 
+events.on('newLine', (data) => {
+    log.warning('Event incoming');
+    log.json(data);
+});
 
 program
     .version(pjson.version || '0.0.1')

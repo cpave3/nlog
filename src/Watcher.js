@@ -1,8 +1,10 @@
 'use strict';
 
-const fs         = require('fs');
-const Tail       = require('tail-forever');
-const log        = require('./Log');
+const fs        = require('fs');
+const Tail      = require('tail-forever');
+const log       = require('./Log');
+const events    = require('./eventEngine'); 
+
 class Watcher {
 
     constructor(config) {
@@ -60,25 +62,23 @@ class Watcher {
             if (this.expected.length === match.length) {
                 // The regex returned the correct number of matches
                 const processed = {};
-                match.forEach( (value, index) => {
+                match.forEach((value, index) => {
                     processed[this.expected[index].name] = value; 
                 });
                 this.db.post(processed, (err, id) => {
                     if (err) {
                         log.error(`Error: ${err}`);
                     }
-                    log.info(`Added a record: ${id}`);
                     const record = this.db.find({ id }, (err, record) => {
                         if (err) {
                             log.error(`Error: ${err}`);
                         }
-                        log.json(record);
+                        events.emit('newLine', {
+                            store: this.databaseName,
+                            data: record
+                        });
                     });
                 });
-
-                // TODO: Handle objects and arrays correctly
-                // TODO: save data into DB
-                // TODO: Emit data to clients
             }
         });
         this.tail.on('error', (err) => {
