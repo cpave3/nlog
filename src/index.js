@@ -26,7 +26,6 @@ loadConfigs(prefs.config.dir)
     })
     .then(() => {
         // Now the we hopefully have some configs, we should process them and start watching files as requested
-        // TODO: Create config processor
         configs.forEach((config) => {
             if (validateConfig(config)) {
                 watchers.push(new Watcher(config));
@@ -36,7 +35,15 @@ loadConfigs(prefs.config.dir)
     .then(() => {
         if (watchers) {
             watchers.forEach((watcher) => {
-                if (watcher.active) watcher.startWatching();       
+                if (watcher.active) {
+                    watcher.assignConnection(connection)
+                        .then((success) => {
+                            watcher.startWatching();
+                        })
+                        .catch((err) => {
+                            log.error(`Error: ${err}`);
+                        });
+                }
             });
         }
     })

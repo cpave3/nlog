@@ -1,8 +1,8 @@
 'use strict';
 
-const fs        = require('fs');
-const Tail      = require('tail-forever');
-const log       = require('./Log');
+const fs         = require('fs');
+const Tail       = require('tail-forever');
+const log        = require('./Log');
 class Watcher {
 
     constructor(config) {
@@ -13,6 +13,7 @@ class Watcher {
         this.historic    = config.rules.processHistoricData || false;
         this.tail        = config.rules.tail || true;
         this.active      = this.verifyTarget() || false;
+        this.databaseName = config.store || this.slugify(this.targetFile);
     }
 
     verifyTarget(targetFile = this.targetFile) {
@@ -26,6 +27,15 @@ class Watcher {
     regexStringToExp(stringExpression = '^.*$') {
         // Somehow convert the string into proper regex here
         return new RegExp(stringExpression, 'g');
+    }
+
+    slugify(stringInput = this.targetFile || '') {
+        return stringInput
+            .toLowerCase()
+            .trim()
+            .replace(/[/.]/g, '-')
+            .replace(/^[^a-z0-9]/g, '')
+            .replace(/--/g, '-');
     }
 
     defaultMatches() {
@@ -53,7 +63,19 @@ class Watcher {
                 match.forEach( (value, index) => {
                     processed[this.expected[index].name] = value; 
                 });
-                console.log('proc', processed);
+                this.db.post(processed, (err, id) => {
+                    if (err) {
+                        log.error(`Error: ${err}`);
+                    }
+                    log.info(`Added a record: ${id}`);
+                    const record = this.db.find({ id }, (err, record) => {
+                        if (err) {
+                            log.error(`Error: ${err}`);
+                        }
+                        log.json(record);
+                    });
+                });
+
                 // TODO: Handle objects and arrays correctly
                 // TODO: save data into DB
                 // TODO: Emit data to clients
@@ -64,6 +86,29 @@ class Watcher {
         });
     }
 
+    assignConnection(connection) {
+        return new Promise((resolve, reject) => {
+            try {
+                this.connection = connection;
+                this.db = this.connection.database(this.databaseName);
+                this.db.exists((exists) => {
+                    if (exists) {
+                        resolve(exists);
+                    } else {
+                    this.db.createSync((err) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(!!this.connection);
+                        }
+                    });
+                    }
+                });
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
 }
 
 module.exports = Watcher;
