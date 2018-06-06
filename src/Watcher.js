@@ -3,19 +3,30 @@
 const fs        = require('fs');
 const Tail      = require('tail-forever');
 const log       = require('./Log');
-const events    = require('./eventEngine'); 
+const events    = require('./eventEngine');
 
 class Watcher {
 
     constructor(config) {
-        this.rawConfig   = config;
-        this.targetFile  = config.target;
-        this.regexFilter = this.regexStringToExp(config.rules.regex || '.*');
-        this.expected    = config.rules.matches || this.defaultMatches();
-        this.historic    = config.rules.processHistoricData || false;
-        this.tail        = config.rules.tail || true;
-        this.active      = this.verifyTarget() || false;
+        this.rawConfig    = config;
+        this.targetFile   = config.target;
+        this.regexFilter  = this.regexStringToExp(config.rules.regex || '.*');
+        this.expected     = config.rules.matches || this.defaultMatches();
+        this.historic     = config.rules.processHistoricData || false;
+        this.tail         = config.rules.tail || true;
+        this.active       = this.verifyTarget() || false;
         this.databaseName = config.store || this.slugify(this.targetFile);
+        this.name         = config.name || this.databaseName;
+        this.uuid         = this.generateGuid();
+    }
+
+    generateGuid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
     verifyTarget(targetFile = this.targetFile) {

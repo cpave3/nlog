@@ -13,10 +13,18 @@ const   pjson           = require('../package.json');
 const   Preferences     = require('preferences');
 
 const   { addConfig, defaultPreferences, loadConfigs, validateConfig } = require('./configManagement');
-const   Watcher        = require('./Watcher'); 
+const   Watcher        = require('./Watcher');
 
+// Socket server related requirements
+const app = express();
+const routes = require('./routes/index');
+app.use(routes);
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Settings and config related requirements
 const prefs = new Preferences('com.bytedriven.nlog', defaultPreferences());
-// FIrst of all, we need to load in any config files from the config directory
+// First of all, we need to load in any config files from the config directory
 // These will be the files which specify which logs to watch and what to do with them
 let configs = [];
 const watchers = [];
@@ -51,9 +59,23 @@ loadConfigs(prefs.config.dir)
         log.error(`Error: ${err}`);
     });
 
+/* 
+ * This event fires whenever a Watcher places a new record into its DB
+ * We need to remember the socket connection in an array somewhere
+ * and also send the client a list of watchers for it to subscribe to
+ */
+io.on('connection', (socket) => {
+    rememberSocket(socket);
+    const mappedWatchers = watchers.map((watcher) => {
+        return { name: watcher.name, uuid: watcher.uuid };
+    });
+    socket.emit('welcome', mappedWatchers);
+});
+
 events.on('newLine', (data) => {
-    log.warning('Event incoming');
-    log.json(data);
+    // From here, we need to emit the event back out to all listeners
+    if (!data) return;
+    io.emit('newLine', data);
 });
 
 program
