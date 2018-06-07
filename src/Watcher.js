@@ -80,13 +80,13 @@ class Watcher {
                     if (err) {
                         log.error(`Error: ${err}`);
                     }
-                    const record = this.db.find({ id }, (err, record) => {
+                    this.db.find({ id }, (err, record) => {
                         if (err) {
                             log.error(`Error: ${err}`);
                         }
                         events.emit('newLine', {
-                            store: this.databaseName,
-                            data: record
+                            uuid: this.uuid,
+                            record: record
                         });
                     });
                 });

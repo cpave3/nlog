@@ -7,7 +7,6 @@
   "author": "Cameron Pavey <cpave3@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "express": "^4.16.3",
     "nosqlite": "^0.2.2",
