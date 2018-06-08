@@ -94,7 +94,7 @@ events.on('newLine', (data) => {
     // only users who are listening for a given watcher should hear this though.
     if (!data) return;
     log.info(`New line found for ${data.uuid}`);
-    io.in(data.uuid).emit('newLine', data.record);
+    io.in(data.uuid).emit('newLine', {...data});
 });
 
 program
