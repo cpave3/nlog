@@ -1,0 +1,6 @@
+[submodule "clients/nlog-react"]
+	path = clients/nlog-react
+	url = https://cpave3@github.com/cpave3/nlog-react
+[submodule "clients/nlog-cli"]
+	path = clients/nlog-cli
+	url = https://github.com/cpave3/nlog-cli
