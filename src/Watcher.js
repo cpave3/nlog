@@ -74,7 +74,10 @@ class Watcher {
                 // The regex returned the correct number of matches
                 const processed = {};
                 match.forEach((value, index) => {
-                    processed[this.expected[index].name] = value; 
+                    processed[this.expected[index].name] 
+                    = (this.expected[index].type && this.expected[index].type == 'json') 
+                    ? JSON.parse(value) 
+                    : value; 
                 });
                 this.db.post(processed, (err, id) => {
                     if (err) {
