@@ -74,19 +74,23 @@ class Watcher {
                 // The regex returned the correct number of matches
                 const processed = {};
                 match.forEach((value, index) => {
+                    // If we are expecting a special type, such as JSON, process it, otherwise, save it verbatim
                     processed[this.expected[index].name] 
                     = (this.expected[index].type && this.expected[index].type == 'json') 
                     ? JSON.parse(value) 
                     : value; 
                 });
+                // Save the record to the DB
                 this.db.post(processed, (err, id) => {
                     if (err) {
                         log.error(`Error: ${err}`);
                     }
+                    // get the newly formed record back out
                     this.db.find({ id }, (err, record) => {
                         if (err) {
                             log.error(`Error: ${err}`);
                         }
+                        // Send it to our listeners
                         events.emit('newLine', {
                             uuid: this.uuid,
                             record: record
@@ -95,6 +99,7 @@ class Watcher {
                 });
             }
         });
+        // If something goes wrong while tailing, log it to the server console.
         this.tail.on('error', (err) => {
             log.error(`Error: ${err}`);
         });
