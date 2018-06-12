@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => log.danger('A client has disconnected'));
     socket.on('subscribe', (request) => {
         // A user has requested to subscribe to the provided watchers, we need to remember this
-        if (!request.watchers) return;
+        if (!request || !request.watchers) return;
         request.watchers.forEach((watcherId) => socket.join(watcherId));
     });
 });

@@ -17,16 +17,16 @@ class Watcher {
         this.active       = this.verifyTarget() || false;
         this.databaseName = config.store || this.slugify(this.targetFile);
         this.name         = config.name || this.databaseName;
-        this.uuid         = this.generateGuid();
+        this.uuid         = this.generateHash(config);
     }
 
-    generateGuid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-        }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    generateHash(objectToHash) {
+        // TODO: This needs to be deterministic so that the UUID remains the same between restarts
+        // This could possibly be done by hashing the config file itself (event though that may not be a guid)
+        return require('crypto')
+            .createHash('md5')
+            .update(JSON.stringify(objectToHash), 'utf8')
+            .digest('hex')
     }
 
     verifyTarget(targetFile = this.targetFile) {
