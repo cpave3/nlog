@@ -5,6 +5,7 @@ const fs        = require('fs');
 
 const methods = {
     addConfig: (configFile) => {
+        // TODO: Needs to be implemented
         console.log(configFile);
     },
     defaultPreferences: () => {
@@ -17,10 +18,17 @@ const methods = {
         }
     },
     loadConfigs: (configDir) => {
-       return new Promise((resolve, reject) => { 
-            if (!fs.existsSync(configDir)){
-                fs.mkdirSync(configDir);
-            }
+       return new Promise((resolve, reject) => {
+            // Here, we should rescursively verify and generate directories
+            configDir
+            .split(path.sep)
+            .reduce((currentPath, dir) => {
+                currentPath += dir + path.sep;
+                if (!fs.existsSync(currentPath)){
+                    fs.mkdirSync(currentPath);
+                }
+                return currentPath;
+            }, '');
 
             fs.readdir(configDir, (err, items) => {
                 if (err) {
