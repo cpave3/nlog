@@ -4,6 +4,8 @@ const fs        = require('fs');
 const Tail      = require('tail-forever');
 const log       = require('./Log');
 const events    = require('./eventEngine');
+const path      = require('path');
+const prefs     = require('./preferences');
 
 class Watcher {
 
@@ -81,20 +83,14 @@ class Watcher {
                     : value; 
                 });
                 // Save the record to the DB
-                this.db.post(processed, (err, id) => {
+                this.db.insert(processed, (err, record) => {
                     if (err) {
                         log.error(`Error: ${err}`);
                     }
-                    // get the newly formed record back out
-                    this.db.find({ id }, (err, record) => {
-                        if (err) {
-                            log.error(`Error: ${err}`);
-                        }
-                        // Send it to our listeners
-                        events.emit('newLine', {
-                            uuid: this.uuid,
-                            record: record
-                        });
+                    // Send it to our listeners
+                    events.emit('newLine', {
+                        uuid: this.uuid,
+                        record: record
                     });
                 });
             }
@@ -105,28 +101,19 @@ class Watcher {
         });
     }
 
-    assignConnection(connection) {
+    /**
+     * This should instantiate the DB instance based on the ID hash of the configuration
+     * @param {*} connection 
+     */
+    assignConnection(Datastore) {
         return new Promise((resolve, reject) => {
             try {
-                this.connection = connection;
-                this.db = this.connection.database(this.databaseName);
-                this.db.exists((exists) => {
-                    if (exists) {
-                        resolve(exists);
-                    } else {
-                    this.db.createSync((err) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(!!this.connection);
-                        }
-                    });
-                    }
-                });
+                this.db = new Datastore({ filename: `${path.join(prefs.config.dir, '..', 'data', `${this.uuid}.db`)}`, autoload: true });
+                resolve(true);
             } catch (err) {
                 reject(err);
             }
-        });
+        })
     }
 }
 

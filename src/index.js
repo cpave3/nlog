@@ -1,7 +1,6 @@
 'use strict';
 
 // Define consts
-const   connection      = new(require('nosqlite').Connection)();
 const   port            = process.env.PORT || 4001;
 const   express         = require('express'),
         http            = require('http'),
@@ -10,21 +9,19 @@ const   express         = require('express'),
         socketIo        = require('socket.io');
 const   program         = require('commander');
 const   pjson           = require('../package.json');
-const   Preferences     = require('preferences');
+const   Datastore       = require('nedb');
+const   prefs           = require('./preferences');
 
-const   { addConfig, defaultPreferences, loadConfigs, validateConfig } = require('./configManagement');
+const   { addConfig, loadConfigs, validateConfig } = require('./configManagement');
 const   Watcher        = require('./Watcher');
 
 // Socket server related requirements
-const app = express();
-const routes = require('./routes/index');
+const app     = express();
+const routes  = require('./routes/index');
 app.use(routes);
-const server = http.createServer(app);
-const io = socketIo(server);
+const server  = http.createServer(app);
+const io      = socketIo(server);
 server.listen(port, () => log.info(`Listening on port: ${port}`));
-
-// Settings and config related requirements
-const prefs = new Preferences('com.bytedriven.nlog', defaultPreferences());
 // First of all, we need to load in any config files from the config directory
 // These will be the files which specify which logs to watch and what to do with them
 let configs = [];
@@ -46,7 +43,7 @@ loadConfigs(prefs.config.dir)
     if (watchers) {
         watchers.forEach((watcher) => {
             if (watcher.active) {
-                watcher.assignConnection(connection)
+                watcher.assignConnection(Datastore)
                     .then((success) => {
                         watcher.startWatching();
                     })
