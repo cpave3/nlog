@@ -6,6 +6,7 @@ const log       = require('./Log');
 const events    = require('./eventEngine');
 const path      = require('path');
 const prefs     = require('./preferences');
+const { objectify } = require('./helpers');
 
 class Watcher {
 
@@ -79,7 +80,7 @@ class Watcher {
                     // If we are expecting a special type, such as JSON, process it, otherwise, save it verbatim
                     processed[this.expected[index].name] 
                     = (this.expected[index].type && this.expected[index].type == 'json') 
-                    ? JSON.parse(value) 
+                    ? objectify(value) 
                     : value; 
                 });
                 // Save the record to the DB
