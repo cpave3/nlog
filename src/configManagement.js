@@ -3,6 +3,8 @@
 const path      = require('path');
 const fs        = require('fs');
 
+const { mkdirp } = require('./helpers');
+
 const methods = {
     addConfig: (configFile) => {
         // TODO: Needs to be implemented
@@ -11,25 +13,20 @@ const methods = {
     defaultPreferences: () => {
         const homeDir = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
         const defaultSettingsDir = path.join(homeDir, '.nlog', 'conf.d');
+        const defaultDataDir = path.join(homeDir, '.nlog', 'data');
         return {
             config: {
                 dir: defaultSettingsDir
+            },
+            data: {
+                dir: defaultDataDir
             }
         }
     },
     loadConfigs: (configDir) => {
-       return new Promise((resolve, reject) => {
+       return new Promise( async (resolve, reject) => {
             // Here, we should rescursively verify and generate directories
-            configDir
-            .split(path.sep)
-            .reduce((currentPath, dir) => {
-                currentPath += dir + path.sep;
-                if (!fs.existsSync(currentPath)){
-                    fs.mkdirSync(currentPath);
-                }
-                return currentPath;
-            }, '');
-
+            await mkdirp(configDir);
             fs.readdir(configDir, (err, items) => {
                 if (err) {
                     reject(err);

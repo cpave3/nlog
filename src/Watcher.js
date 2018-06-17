@@ -6,7 +6,7 @@ const log       = require('./Log');
 const events    = require('./eventEngine');
 const path      = require('path');
 const prefs     = require('./preferences');
-const { objectify } = require('./helpers');
+const { objectify, mkdirp } = require('./helpers');
 
 class Watcher {
 
@@ -107,9 +107,18 @@ class Watcher {
      * @param {*} connection 
      */
     assignConnection(Datastore) {
-        return new Promise((resolve, reject) => {
+        return new Promise( async (resolve, reject) => {
             try {
-                this.db = new Datastore({ filename: `${path.join(prefs.config.dir, '..', 'data', `${this.uuid}.db`)}`, autoload: true });
+                if (!prefs.data) {
+                    // For some reason the data dir doesn't exist, so we need to set it.
+                    const homeDir = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+                    const defaultDataDir = path.join(homeDir, '.nlog', 'data');
+                    prefs.data = {
+                        dir: defaultDataDir
+                    };
+                    await mkdirp(prefs.data.dir);
+                }
+                this.db = new Datastore({ filename: `${path.join(prefs.data.dir, `${this.uuid}.db`)}`, autoload: true });
                 resolve(true);
             } catch (err) {
                 reject(err);
