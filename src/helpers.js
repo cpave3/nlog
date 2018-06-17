@@ -1,4 +1,8 @@
 'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
 const methods = {
     bulkReplace: (input = '', arrayReplacements = []) => {
         // Each item in arrayReplacements should be a regex/string pair.
@@ -37,6 +41,20 @@ const methods = {
             // Otherwise, we will return the input as it was given
             return input;
         }
+    },
+    mkdirp: (targetPath) => {
+        // We are provided with a path which needs to be created, mkdir -p style
+        targetPath
+            .split(path.sep)
+            .reduce((currentPath, dir) => {
+                // We get an array of each dir on the path, and synchronously 
+                // make them if they don't already exist
+                currentPath += dir + path.sep;
+                if (!fs.existsSync(currentPath)){
+                    fs.mkdirSync(currentPath);
+                }
+                return currentPath;
+            }, '');
     },
 };
 
