@@ -11,8 +11,8 @@ const { objectify, mkdirp } = require('./helpers');
 class Watcher {
 
     constructor(config) {
-        this.rawConfig    = config;
-        this.targetFile   = config.target;
+        this.rawConfig    = config || {};
+        this.targetFile   = config.target || null;
         this.regexFilter  = this.regexStringToExp(config.rules.regex || '.*');
         this.expected     = config.rules.matches || this.defaultMatches();
         this.historic     = config.rules.processHistoricData || false;
