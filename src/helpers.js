@@ -13,8 +13,8 @@ const methods = {
                 // This will return all pairs with a RegExp and String
                 return pair instanceof Array && 
                        pair.length === 2 && 
-                       pair[0] instanceof RegExp && 
-                       pair[1] instanceof String;
+                       pair[0] instanceof RegExp &&
+                       typeof pair[1] == 'string';
             })
             .reduce((accum, pair) => {
                 // Apply each of the modifications to the input string

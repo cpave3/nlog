@@ -1,0 +1,37 @@
+{
+  "name": "Valid Config",
+  "target": "/Users/cameron/.nlog/sample.log",
+  "rules": {
+    "regex": "^\\[(.+?)\\] (.*)\\.(.\\w+): (.*?) ([\\[{].*[}\\]]) ([\\[{].*[}\\]])",
+    "matches": [
+      {
+        "name": "timestamp",
+        "displayName": "Time",
+        "type": "timestamp"
+      },
+      {
+        "name": "environment",
+        "type": "string"
+      },
+      {
+        "name": "severity",
+        "type": "string"
+      },
+      {
+        "name": "message",
+        "type": "string"
+      },
+      {
+        "name": "data",
+        "type": "json"
+      },
+      {
+        "name": "other",
+        "type": "json"
+      }
+    ],
+    "processHistoricData": true,
+    "tail": true
+  }
+}
+
