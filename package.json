@@ -1,6 +1,6 @@
 {
   "name": "nlog",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A tool for digesting and disseminating arbitrary log data",
   "main": "src/index.js",
   "repository": "https://github.com/cpave3/nlog",

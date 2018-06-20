@@ -4,11 +4,13 @@ const express   = require('express');
 const http      = require('http');
 const socketIo  = require('socket.io');
 const Datastore = require('nedb');
+const path      = require('path');
 
 const events    = require('./eventEngine');
 const Watcher   = require('./Watcher');
 const prefs     = require('./preferences');
 const log       = require('./Log');
+const helpers   = require('./helpers');
 
 const { addConfig, loadConfigs, validateConfig }  = require('./configManagement');
 
@@ -68,6 +70,36 @@ const methods = {
     startListening: () => {
         server.listen(port, () => {
             log.info(`Listening on port: ${port}`)
+        });
+    },
+    viewDatastores: () => {
+        // This command needs to pluck the contents of the data and config directories and get details on their files
+        // First, we need to get the directories and make sure they are both set and exist
+        const homeDir = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+        const defaultSettingsDir = path.join(homeDir, '.nlog', 'conf.d');
+        const defaultDataDir = path.join(homeDir, '.nlog', 'data');
+        if (!prefs.config || ! prefs.config.dir) {
+            prefs.config = {
+                dir: defaultSettingsDir
+            };
+        }
+        if (!prefs.data || ! prefs.data.dir) {
+            prefs.data = {
+                dir: defaultDataDir
+            };
+        }
+
+        // We need to get the data and config directories first...
+        helpers.getDirContents(prefs.config.dir, prefs.data.dir)
+        .then(arrayResults => {
+            // We should have an array with 2 sub-arrays. Each sub array will contain the respective file names. 
+            const arrayConfigFiles = arrayResults[0];
+            const arrayDataFiles = arrayResults[1];
+            log.info(`Data files located at: ${prefs.data.dir}`);
+            log.json(arrayDataFiles);
+        })
+        .catch(error => {
+            log.error(error);
         });
     }
 };
