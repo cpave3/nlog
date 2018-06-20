@@ -69,6 +69,10 @@ const methods = {
         server.listen(port, () => {
             log.info(`Listening on port: ${port}`)
         });
+    },
+    viewDatastores: () => {
+        // This command needs to pluck the contents of the data and config directories and get details on their files
+        log.warning('WIP');
     }
 };
 

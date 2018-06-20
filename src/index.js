@@ -7,10 +7,7 @@ const program  = require('commander');
 const log      = require('./Log');
 const pjson    = require('../package.json');
 const prefs    = require('./preferences');
-const { initiateWatchers } = require('./Logic');
-
-
-
+const { initiateWatchers, viewDatastores } = require('./Logic');
 
 program
     .version(pjson.version || '0.0.1')
@@ -37,9 +34,7 @@ program
     .command('view:data')
     .alias('vd')
     .description('View the current datastore')
-    .action(() => {
-        log.warning('TODO');
-    });
+    .action(() => viewDatastores());
 
 // TODO: This command should present the user with the power to clean up old data stores
 program
