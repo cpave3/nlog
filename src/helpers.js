@@ -56,6 +56,22 @@ const methods = {
                 return currentPath;
             }, '');
     },
+    getDirContents: (directoryPath) => {
+        return new Promise( async (resolve, reject) => {
+            // Here, we should rescursively verify and generate directories
+            if (fs.existsSync(directoryPath)) {
+                fs.readdir(directoryPath, (err, items) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    // No massive errors, so we return the contents as an array of single file names.
+                    resolve(items);
+                });
+            } else {
+                reject(`Invalid directory specified: ${directoryPath}`)
+            }
+        })
+    }
 };
 
 module.exports = methods;
