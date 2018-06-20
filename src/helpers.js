@@ -56,19 +56,23 @@ const methods = {
                 return currentPath;
             }, '');
     },
-    getDirContents: (directoryPath) => {
+    getDirContents: async (firstPath, ...extraPaths) => {
         return new Promise( async (resolve, reject) => {
             // Here, we should rescursively verify and generate directories
-            if (fs.existsSync(directoryPath)) {
-                fs.readdir(directoryPath, (err, items) => {
-                    if (err) {
-                        reject(err);
+            try {
+                const arrayPaths = [firstPath, ...extraPaths];
+                const arrayResults = [];
+                arrayPaths.forEach(directoryPath => {
+                    if (fs.existsSync(directoryPath)) {
+                        const items = fs.readdirSync(directoryPath);
+                        arrayResults.push(items);
+                    } else {
+                        reject(`Invalid directory specified: ${directoryPath}`)
                     }
-                    // No massive errors, so we return the contents as an array of single file names.
-                    resolve(items);
                 });
-            } else {
-                reject(`Invalid directory specified: ${directoryPath}`)
+                resolve(arrayResults.length === 1 ? arrayResults[0] : arrayResults);
+            } catch (error) {
+                reject(error.message);
             }
         })
     }

@@ -36,8 +36,25 @@ describe('helpers.getDirContents', () => {
         });
     });
 
-    it('should return a list of files for a valid directory', (done) => {
-        const arrayFiles = helpers.getDirContents('/home/cameron');
+    it('should return an array of file names for a single valid directory', (done) => {
+        const arrayFiles = helpers.getDirContents(__dirname);
+        arrayFiles
+        .then((array) => {
+            expect(array).to.be.an('array');
+            expect(array).to.not.be.null;
+            expect(array).to.not.be.undefined;
+            // It might be empty though, to be fair
+            done();
+        })
+        .catch((error) => {
+            console.log(error);
+            assert.fail(error, []);
+            done();
+        });
+    });
+
+    it('should return an array of arrays of file names for multiple valid directories', (done) => {
+        const arrayFiles = helpers.getDirContents(__dirname, '../');
         arrayFiles
         .then((array) => {
             expect(array).to.be.an('array');
