@@ -5,6 +5,7 @@ const http      = require('http');
 const socketIo  = require('socket.io');
 const Datastore = require('nedb');
 const path      = require('path');
+const fs        = require('fs');
 
 const events    = require('./eventEngine');
 const Watcher   = require('./Watcher');
@@ -95,7 +96,30 @@ const methods = {
             // We should have an array with 2 sub-arrays. Each sub array will contain the respective file names. 
             const arrayConfigFiles = arrayResults[0];
             const arrayDataFiles = arrayResults[1];
-            log.info(`Data files located at: ${prefs.data.dir}`);
+            const arrayPairedData = [];
+            // For each config, we need to load it in, hash it and store the hash somewhere against the config
+            arrayConfigFiles.forEach(config => {
+                try {
+                   // attempt to load each file
+                   const objectConfig = JSON.parse(fs.readFileSync(path.join(prefs.config.dir, config), 'utf8'));
+                   const stringHash = require('crypto').createHash('md5').update(JSON.stringify(objectConfig), 'utf8').digest('hex');
+                   // Now that we have the config and hash, we need to check if any of the data objects match this config.
+                   if (arrayDataFiles.indexOf(`${stringHash}.db`) != -1) {
+                       arrayPairedData.push(arrayDataFiles.splice(arrayDataFiles.indexOf(`${stringHash}.db`, 1)));
+                   }                    
+
+                } catch (error) {
+                    log.error(`Error: ${error.message}`);
+                    log.danger(`Invalid config found: ${path.join(prefs.config.dir, config)}`) 
+                }
+            });
+            // With the list of Orphaned data files, we should now return them to the next layer of the promise, 
+            // and let the user select which ones to clean up
+            return arrayDataFiles;
+        })
+        .then(arrayDataFiles => {
+            // const inquirer  = require('inquirer'); // No point loading this early
+            log.danger('Orphaned data files:');
             log.json(arrayDataFiles);
         })
         .catch(error => {
