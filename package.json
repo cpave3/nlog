@@ -10,6 +10,7 @@
     "commander": "^2.15.1",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "inquirer": "^6.0.0",
     "nedb": "^1.8.0",
     "path": "^0.12.7",
     "preferences": "^1.0.2",

@@ -60,16 +60,22 @@ const methods = {
         return new Promise( async (resolve, reject) => {
             // Here, we should rescursively verify and generate directories
             try {
+                // Combine all of the requested paths into a single array
                 const arrayPaths = [firstPath, ...extraPaths];
                 const arrayResults = [];
+
+                // Check if each apth exists, and record what is located there
                 arrayPaths.forEach(directoryPath => {
                     if (fs.existsSync(directoryPath)) {
                         const items = fs.readdirSync(directoryPath);
                         arrayResults.push(items);
                     } else {
+                        // If any paths are invalid, we fail
                         reject(`Invalid directory specified: ${directoryPath}`)
                     }
                 });
+                // If only 1 path was requested, return its contents, otherwise return 
+                // an array of all requested paths' contents in order
                 resolve(arrayResults.length === 1 ? arrayResults[0] : arrayResults);
             } catch (error) {
                 reject(error.message);
