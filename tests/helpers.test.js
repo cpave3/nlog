@@ -70,3 +70,22 @@ describe('helpers.getDirContents', () => {
         });
     });
 });
+
+describe('helpers.removeFile', () => {
+    it('should return FALSE on an empty path', () => {
+        expect(helpers.removeFile()).to.equal(false);
+    }); 
+    it('should return FALSE if it fails to perform the action', () => {
+        expect(helpers.removeFile(() => {})).to.equal(false);
+    });
+    it('should return TRUE if it succeeds in removing the file', () => {
+        const path = require('path');
+        const fs = require('fs');
+        fs.writeFile(path.join(__dirname, 'tempfile'), 'this file should have been deleted', (err) => {
+            if(err) {
+                assert.fail('Failed to write test file');
+            }
+            expect(helpers.removeFile(path.join(__dirname, 'tempfile'))).to.equal(true);
+        }); 
+    });
+});

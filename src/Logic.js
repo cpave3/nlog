@@ -118,9 +118,35 @@ const methods = {
             return arrayDataFiles;
         })
         .then(arrayDataFiles => {
-            // const inquirer  = require('inquirer'); // No point loading this early
-            log.danger('Orphaned data files:');
-            log.json(arrayDataFiles);
+            log.info(`${arrayDataFiles.length} orphaned data ${arrayDataFiles.length != 1 ? 'files' : 'file'} found:`);
+            const inquirer  = require('inquirer'); // No point loading this early
+            inquirer.prompt([{
+                type: 'confirm',
+                name: 'cleanup',
+                message: 'Would you like to perform a cleanup?'
+            }])
+            .then((answers) => {
+                if (answers.cleanup) {
+                    inquirer.prompt([{
+                        type: 'checkbox',
+                        name: 'trash',
+                        message: 'Select data files you would like to remove',
+                        choices: arrayDataFiles.map((row) => {return {name: row}})
+                    }])
+                    .then((answers) => {
+                        if (answers.trash) {
+                            // We should have some files to delete, possibly
+                            answers && answers.trash && answers.trash.forEach(fileName => {
+                                helpers.removeFile(path.join(prefs.data.dir, fileName));
+                                log.warning(`Deleting: ${path.join(prefs.data.dir, fileName)}`);
+                            });
+                        }
+                        log.info('Process complete. Exiting...');
+                    })
+                } else {
+                    log.info('Exiting...');
+                }
+            })
         })
         .catch(error => {
             log.error(error);

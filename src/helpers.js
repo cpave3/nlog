@@ -81,7 +81,21 @@ const methods = {
                 reject(error.message);
             }
         })
-    }
+    },
+    removeFile: (fileLocation) => {
+        // This method needs to check if a file exists and if so, remove it and return true, otherwise return false
+        try {
+            if (fs.existsSync(fileLocation)) {
+                    fs.unlinkSync(fileLocation);
+                    return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            log.error(`ERROR: ${error}`);
+            return false;
+        }
+    },
 };
 
 module.exports = methods;
