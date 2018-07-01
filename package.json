@@ -1,6 +1,6 @@
 {
   "name": "nlog",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "A tool for digesting and disseminating arbitrary log data",
   "main": "src/index.js",
   "repository": "https://github.com/cpave3/nlog",
@@ -14,7 +14,7 @@
     "nedb": "^1.8.0",
     "path": "^0.12.7",
     "preferences": "^1.0.2",
-    "prettyjson": "^1.2.1",
+    "sleek-log": "^2.0.0",
     "socket.io": "^2.1.1",
     "tail-forever": "^0.3.15"
   },
