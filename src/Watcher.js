@@ -79,10 +79,17 @@ class Watcher {
                     const processed = {};
                     match.forEach((value, index) => {
                         // If we are expecting a special type, such as JSON, process it, otherwise, save it verbatim
-                        processed[this.expected[index].name] 
-                        = (this.expected[index].type && this.expected[index].type == 'json') 
-                        ? JSON.parse(value) 
-                        : value; 
+                        let processedValue = null;
+                        try {
+                            processedValue = (this.expected[index].type && this.expected[index].type == 'json') 
+                            ? JSON.parse(value) 
+                            : value;
+                        } catch (error) {
+                            // Something happemed, probably bad JSON, so we will just get the raw value to avoid errors.
+                            processedValue = value;
+                        }
+
+                        processed[this.expected[index].name] = processedValue ;
                     });
                     // Save the record to the DB
                     this.db.insert(processed, (err, record) => {
