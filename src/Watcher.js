@@ -70,30 +70,34 @@ class Watcher {
             // We have a line, and need to process it
             this.regexFilter.lastIndex = 0;
             const match = this.regexFilter.exec(line);
-            // We are now hopefully getting the matches
-            // we need to compare what we got to our expected matches
-            const stringMatch = match.shift();
-            if (this.expected.length === match.length) {
-                // The regex returned the correct number of matches
-                const processed = {};
-                match.forEach((value, index) => {
-                    // If we are expecting a special type, such as JSON, process it, otherwise, save it verbatim
-                    processed[this.expected[index].name] 
-                    = (this.expected[index].type && this.expected[index].type == 'json') 
-                    ? objectify(value) 
-                    : value; 
-                });
-                // Save the record to the DB
-                this.db.insert(processed, (err, record) => {
-                    if (err) {
-                        log.error(`Error: ${err}`);
-                    }
-                    // Send it to our listeners
-                    events.emit('newLine', {
-                        uuid: this.uuid,
-                        record: record
+            if (match) {
+                // We are now hopefully getting the matches
+                // we need to compare what we got to our expected matches
+                const stringMatch = match.shift();
+                if (this.expected.length === match.length) {
+                    // The regex returned the correct number of matches
+                    const processed = {};
+                    match.forEach((value, index) => {
+                        // If we are expecting a special type, such as JSON, process it, otherwise, save it verbatim
+                        processed[this.expected[index].name] 
+                        = (this.expected[index].type && this.expected[index].type == 'json') 
+                        ? JSON.parse(value) 
+                        : value; 
                     });
-                });
+                    // Save the record to the DB
+                    this.db.insert(processed, (err, record) => {
+                        if (err) {
+                            log.error(`Error: ${err}`);
+                        }
+                        // Send it to our listeners
+                        events.emit('newLine', {
+                            uuid: this.uuid,
+                            record: record
+                        });
+                    });
+                }
+            } else {
+                log.danger('Bad line recieved');
             }
         });
         // If something goes wrong while tailing, log it to the server console.
