@@ -788,9 +788,9 @@ signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-sleek-log@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/sleek-log/-/sleek-log-1.0.1.tgz#9e0ef1c47ee39224b9a15ddb27d999a3b8d7c4f2"
+sleek-log@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/sleek-log/-/sleek-log-2.0.1.tgz#5de94b3c8f2950406e8678f2e18bad616d3b094f"
 
 slide@^1.1.5:
   version "1.1.6"
