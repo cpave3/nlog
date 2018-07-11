@@ -102,3 +102,9 @@ so you might want to do this in a `tmux` session or something like that)
 Start an nlog client (the CLI client is currently stable, the react client is in development)
 
 `cd ./clients/nlog-cli && npm link && nlog-cli`
+
+## To Do:
+
+  - Abstract the FS related helpers into a separate library
+  - Allow the direct addition of log data via WSS or REST (rather than only via tail)
+    - This is primarily for [Sleek Log](http://github.com/cpave3/sleek-log) integration.
